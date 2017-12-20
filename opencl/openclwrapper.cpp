@@ -991,10 +991,10 @@ int OpenclDevice::GeneratBinFromKernelSource( cl_program program, const char * c
             legalizeFileName(fileName);
             if ( !WriteBinaryToFile( fileName, binaries[i], binarySizes[i] ) )
             {
-                tprintf("[OD] write binary[%s] failed\n", fileName);
+                //tprintf("[OD] write binary[%s] failed\n", fileName);
                 return 0;
             } //else
-            tprintf("[OD] write binary[%s] successfully\n", fileName);
+            //tprintf("[OD] write binary[%s] successfully\n", fileName);
         }
     }
 
@@ -2537,8 +2537,8 @@ static ds_status releaseScore(void *score) {
 static ds_status evaluateScoreForDevice(ds_device *device, void *inputData) {
   // overwrite statuc gpuEnv w/ current device
   // so native opencl calls can be used; they use static gpuEnv
-  tprintf("\n[DS] Device: \"%s\" (%s) evaluation...\n", device->oclDeviceName,
-         device->type == DS_DEVICE_OPENCL_DEVICE ? "OpenCL" : "Native");
+  //tprintf("\n[DS] Device: \"%s\" (%s) evaluation...\n", device->oclDeviceName,
+  //       device->type == DS_DEVICE_OPENCL_DEVICE ? "OpenCL" : "Native");
   GPUEnv *env = nullptr;
   if (device->type == DS_DEVICE_OPENCL_DEVICE) {
     env = new GPUEnv;
@@ -2583,6 +2583,7 @@ static ds_status evaluateScoreForDevice(ds_device *device, void *inputData) {
   device->score = new TessDeviceScore;
   ((TessDeviceScore *)device->score)->time = weightedTime;
 
+  /*
   tprintf("[DS] Device: \"%s\" (%s) evaluated\n", device->oclDeviceName,
          device->type == DS_DEVICE_OPENCL_DEVICE ? "OpenCL" : "Native");
   tprintf("[DS]%25s: %f (w=%.1f)\n", "composeRGBPixel", composeRGBPixelTime,
@@ -2595,6 +2596,7 @@ static ds_status evaluateScoreForDevice(ds_device *device, void *inputData) {
          getLineMasksMorphWeight);
   tprintf("[DS]%25s: %f\n", "Score",
          static_cast<TessDeviceScore *>(device->score)->time);
+  */
   return DS_SUCCESS;
 }
 
@@ -2616,8 +2618,8 @@ ds_device OpenclDevice::getDeviceSelection( ) {
       status = readProfileFromFile(profile, deserializeScore, fileName);
       if (status != DS_SUCCESS) {
         // need to run evaluation
-        tprintf("[DS] Profile file not available (%s); performing profiling.\n",
-               fileName);
+        //tprintf("[DS] Profile file not available (%s); performing profiling.\n",
+        //       fileName);
 
         // create input data
         TessScoreEvaluationInputData input;
@@ -2633,7 +2635,7 @@ ds_device OpenclDevice::getDeviceSelection( ) {
           status = writeProfileToFile(profile, serializeScore, fileName);
           PERF_COUNT_SUB("writeProfileToFile")
           if (status == DS_SUCCESS) {
-            tprintf("[DS] Scores written to file (%s).\n", fileName);
+            //tprintf("[DS] Scores written to file (%s).\n", fileName);
           } else {
             tprintf(
                 "[DS] Error saving scores to file (%s); scores not written to "
@@ -2647,7 +2649,7 @@ ds_device OpenclDevice::getDeviceSelection( ) {
         }
       } else {
         PERF_COUNT_SUB("readProfileFromFile")
-        tprintf("[DS] Profile read from file (%s).\n", fileName);
+        //tprintf("[DS] Profile read from file (%s).\n", fileName);
       }
 
       // we now have device scores either from file or evaluation
@@ -2659,18 +2661,19 @@ ds_device OpenclDevice::getDeviceSelection( ) {
         TessDeviceScore score = *(TessDeviceScore *)device.score;
 
         float time = score.time;
-        tprintf("[DS] Device[%u] %i:%s score is %f\n", d + 1, device.type,
-               device.oclDeviceName, time);
+        //tprintf("[DS] Device[%u] %i:%s score is %f\n", d + 1, device.type,
+        //       device.oclDeviceName, time);
         if (time < bestTime) {
           bestTime = time;
           bestDeviceIdx = d;
         }
       }
-      tprintf("[DS] Selected Device[%i]: \"%s\" (%s)\n", bestDeviceIdx + 1,
+      /*tprintf("[DS] Selected Device[%i]: \"%s\" (%s)\n", bestDeviceIdx + 1,
              profile->devices[bestDeviceIdx].oclDeviceName,
              profile->devices[bestDeviceIdx].type == DS_DEVICE_OPENCL_DEVICE
                  ? "OpenCL"
                  : "Native");
+      */
       // cleanup
       // TODO: call destructor for profile object?
 
